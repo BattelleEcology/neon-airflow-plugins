@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 """ Executing sql operator that can be used for an XCOM """
 
-from __future__ import absolute_import, division, print_function
-
-from airflow.hooks.base_hook import BaseHook
+from airflow.hooks.base import BaseHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
@@ -22,13 +20,17 @@ class SQLExecuteOperator(BaseOperator):
     :returns a dict if a field_list is passed otherwise a list
     """
 
-    template_fields = ('sql',)
-    template_ext = ('.hql', '.sql',)
-    ui_color = '#fff7e6'
+    template_fields = ("sql",)
+    template_ext = (
+        ".hql",
+        ".sql",
+    )
+    ui_color = "#fff7e6"
 
     @apply_defaults
-    def __init__(self, sql, conn_id=None, parameters=None, field_list=None,
-                 *args, **kwargs):
+    def __init__(
+        self, sql, conn_id=None, parameters=None, field_list=None, *args, **kwargs
+    ):
         super(SQLExecuteOperator, self).__init__(*args, **kwargs)
         self.conn_id = conn_id
         self.sql = sql
@@ -38,7 +40,7 @@ class SQLExecuteOperator(BaseOperator):
     def execute(self, context=None):
         self.log.info("Executing: %s", self.sql)
         records = self.get_db_hook().get_first(self.sql)
-        self.log.info('Record: %s', records)
+        self.log.info("Record: %s", records)
         # Keep in mind xcom returns are pickled
         if self.field_list is None:
             return records
